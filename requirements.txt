@@ -1,4 +1,4 @@
-transformers"[speech, sentencepiece]"
+transformers
 torchaudio
 sentencepiece
 SoundFile
