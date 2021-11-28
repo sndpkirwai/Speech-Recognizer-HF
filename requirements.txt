@@ -3,4 +3,3 @@ torchaudio
 sentencepiece
 SoundFile
 streamlit
-flask
