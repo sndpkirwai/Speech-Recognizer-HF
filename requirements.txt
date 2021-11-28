@@ -1,0 +1,6 @@
+transformers"[speech, sentencepiece]"
+torchaudio
+sentencepiece
+SoundFile
+streamlit
+flask
