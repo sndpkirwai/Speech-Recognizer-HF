@@ -1,14 +1,15 @@
-from transformers import Speech2TextProcessor, \
-    Speech2TextForConditionalGeneration
-from IPython.display import Audio
-import soundfile as sf
-import streamlit as st
+import os
 
 from transformers import Speech2TextProcessor, \
     Speech2TextForConditionalGeneration
-from IPython.display import Audio
 import soundfile as sf
 import streamlit as st
+
+
+def save_uploadedfile(uploadedfile, path):
+    with open(path, "wb") as f:
+        f.write(uploadedfile.getbuffer())
+    print("Saved File:{} to upload".format(uploadedfile.name))
 
 
 st.title('Speech Recognition')
@@ -22,17 +23,22 @@ file = st.file_uploader('Audio file')
 
 if file is not None:
     speech, _ = sf.read(file)
-
+    path = os.path.join(os.getcwd(), 'upload')
+    file_path = os.path.join(path, file.name)
+    save_uploadedfile(file, file_path)
     model = Speech2TextForConditionalGeneration.from_pretrained(
-            "facebook/s2t-small-librispeech-asr")
+        "facebook/s2t-small-librispeech-asr")
     processor = Speech2TextProcessor.from_pretrained(
-            "facebook/s2t-small-librispeech-asr")
+        "facebook/s2t-small-librispeech-asr")
 
     inputs = processor(speech, sampling_rate=16_000, return_tensors="pt")
     generated_ids = model.generate(input_ids=inputs["input_features"],
-                                       attention_mask=inputs["attention_mask"])
+                                   attention_mask=inputs["attention_mask"])
     transcription = processor.batch_decode(generated_ids)
 
-    st.write(Audio(file))
+    audio_file = open(file_path, 'rb')
+    audio_bytes = audio_file.read()
+
+    st.audio(audio_bytes, format='audio/wav')
     st.write('Recognized transcript is: ')
-    st.write(transcription)
+    st.write(transcription[0])
